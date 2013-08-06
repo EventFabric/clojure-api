@@ -1,0 +1,50 @@
+Event Fabric API Client
+=======================
+
+Clojure implementation of Event Fabric API to send events.
+
+Setup
+-----
+
+See `Clojars Page <http://clojars.org/event-fabric/api-client>`_ for install instructions.
+
+Usage
+-----
+
+::
+
+    ; import the library
+    (use 'event-fabric.api-client)
+
+    ; create a new client specifying username and password
+    (def client (new-client "mariano" "secret"))
+
+    ; try to autenticate and get the session object if successful
+    (let [[login-ok session] (login client)]
+        (if login-ok
+            (def session session)
+            (println "login failed")))
+
+    ; send an event with the session object
+    ; the first parameter is the session object we got from the login call
+
+    ; the second parameter is a free form JSON value that contains
+    ; information about the event
+
+    ; the third parameter is the name of the channel where that event will go
+
+    ; the channel is used to subscribe to a stream of events with the same
+    ; channel id
+    (send-event session {:name "bob" :count 10} "my.channel")
+
+Test
+----
+
+::
+
+    lein test
+
+License
+-------
+
+MIT
