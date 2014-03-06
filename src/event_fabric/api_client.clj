@@ -4,7 +4,7 @@
 
 (def default-root-url "https://event-fabric.com/api/")
 
-(defn- default-requester [url body cookies]
+(defn- default-requester [url body & [cookies]]
   (let [json-body (json/generate-string body)
         base-request-opts {:body json-body :content-type :json}
         request-opts (if cookies
@@ -35,7 +35,7 @@
         service-url (make-endpoint root-url "session")
         response (requester service-url request-data)
         status (:status response)]
-    (if (= status 200)
+    (if (= status 201)
       [true (make-session client (:cookies response))]
       [false (make-session client nil)])))
 
