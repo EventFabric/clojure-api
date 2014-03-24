@@ -39,11 +39,12 @@
       [true (make-session client (:cookies response))]
       [false (make-session client nil)])))
 
-(defn send-event [session value channel & [requester]]
+(defn send-event [session value channel & [volatile requester]]
   (let [requester (or requester default-requester)
+        volatile (or volatile false)
         root-url (get-in session [:client-data :root-url])
         service-url (make-endpoint root-url "event")
-        request-data {:value value :channel channel}
+        request-data {:value value :channel channel :volatile volatile}
         cookies (:session-data session)
         response (requester service-url request-data cookies)
         status (:status response)]

@@ -1,0 +1,7 @@
+{
+    "folder":  "resources/",
+    "ef-username": "admin",
+    "ef-password": "notadmin",
+    "ef-channel": "csv row",
+    "ef-url": "http://localhost:8080/api/"
+}
