@@ -1,4 +1,4 @@
-(defproject event-fabric/api-client "0.1.2-SNAPSHOT"
+(defproject event-fabric/api-client "0.2.0"
   :description "Clojure library for Event Fabric's API"
   :url "http://github.com/EventFabric/clojure-client"
   :license {:name "MIT"
