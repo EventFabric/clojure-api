@@ -2,13 +2,13 @@
   (:require [cheshire.core :as json]
             [clj-http.client :as http]))
 
-(def default-root-url "https://event-fabric.com/api/")
+(def default-root-url "https://event-fabric.com/")
 
-(defn- default-requester [url body & [cookies]]
+(defn- default-requester [url body & [token]]
   (let [json-body (json/generate-string body)
         base-request-opts {:body json-body :content-type :json}
-        request-opts (if cookies
-                       (assoc base-request-opts :cookies cookies)
+        request-opts (if token
+                       (assoc base-request-opts :headers {"x-session" token})
                        base-request-opts)]
     (http/post url request-opts)))
 
@@ -32,21 +32,23 @@
   (let [requester (or requester default-requester)
         {:keys [username password root-url]} client
         request-data {:username username :password password}
-        service-url (make-endpoint root-url "session")
+        service-url (make-endpoint root-url "sessions")
         response (requester service-url request-data)
+        body (json/parse-string (:body response) true)
+        token (:token body)
         status (:status response)]
     (if (= status 201)
-      [true (make-session client (:cookies response))]
+      [true (make-session client token)]
       [false (make-session client nil)])))
 
-(defn send-event [session value channel & [volatile requester]]
+(defn send-event [session value channel & [user requester]]
   (let [requester (or requester default-requester)
-        volatile (or volatile false)
         root-url (get-in session [:client-data :root-url])
-        service-url (make-endpoint root-url "event")
-        request-data {:value value :channel channel :volatile volatile}
-        cookies (:session-data session)
-        response (requester service-url request-data cookies)
+        username (or user (get-in session [:client-data :username]))
+        stream-url (str "streams/" username "/" channel "/")
+        service-url (make-endpoint root-url stream-url)
+        token (:session-data session)
+        response (requester service-url value token)
         status (:status response)]
     [(= status 201) response]))
 

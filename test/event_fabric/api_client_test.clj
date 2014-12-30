@@ -3,15 +3,14 @@
             [cheshire.core :as json])
   (:use event-fabric.api-client))
 
-(defn fake-response [status cookies]
-  {:status status :cookies cookies})
+(defn fake-response [status]
+  {:status status})
 
-(defn fake-requester [storage response-status response-cookies]
-  (fn [url body & [cookies]]
+(defn fake-requester [storage response-status]
+  (fn [url body]
     (swap! storage #(conj % {:url url
-                             :body body
-                             :cookies cookies}))
-    {:status response-status :cookies response-cookies}))
+                             :body body}))
+    {:status response-status}))
 
 (deftest client-test
   (testing "a client can be constructed"
@@ -39,34 +38,31 @@
   
   (testing "login works"
     (let [storage (atom [])
-          req-url "http://localhost:8080/ef/api"
+          req-url "http://localhost:8080/"
           client (new-client "username" "password" req-url)
-          requester (fake-requester storage 200 "cookies!")
+          requester (fake-requester storage 200)
           [login-ok session] (login client requester)
-          {:keys [url body cookies]} (first @storage)]
+          {:keys [url body]} (first @storage)]
 
       (is login-ok)
-      (is (= url (str req-url "/session")))
-      (is (= body {:username "username" :password "password"}))
-      (is (= cookies nil))
-      (is (= (:session-data session) "cookies!"))))
+      (is (= url (str req-url "sessions")))
+      (is (= body {:username "username" :password "password"}))))
 
   (testing "send event works"
     (let [login-storage (atom [])
-          req-url "http://localhost:8080/ef/api"
+          req-url "http://localhost:8080/"
           client (new-client "username" "password" req-url)
-          login-requester (fake-requester login-storage 200 "cookies!")
+          login-requester (fake-requester login-storage 200)
           [login-ok session] (login client login-requester)
 
           send-storage (atom [])
-          send-requester (fake-requester send-storage 201 "cookies!")
+          send-requester (fake-requester send-storage 201)
           [send-ok response] (send-event session {:name "bob" :count 11}
                                          "my.channel" send-requester)
-          {:keys [url body cookies]} (first @send-storage)]
-          
+          {:keys [url body]} (first @send-storage)]
+
 
       (is send-ok)
-      (is (= url (str req-url "/event")))
-      (is (= body {:channel "my.channel" :value {:name "bob" :count 11}}))
-      (is (= cookies "cookies!"))))
+      (is (= url (str req-url "/streams")))
+      (is (= body {:channel "my.channel" :value {:name "bob" :count 11}}))))
   )

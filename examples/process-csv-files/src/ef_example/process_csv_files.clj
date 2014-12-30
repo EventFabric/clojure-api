@@ -22,8 +22,7 @@
 (defn- make-ef-send-event [session channel]
   (fn [value]
     (prn "sending event to event fabric" channel value)
-    ;true because it is a volatile event
-    (ef/send-event session value channel true)))
+    (ef/send-event session value channel)))
 
 (defn- read-file [file-path ef-send-event]
   (with-open [in-file (io/reader file-path)]

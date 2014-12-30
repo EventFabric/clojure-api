@@ -6,7 +6,7 @@
                  [org.clojure/data.csv "0.1.2"]
                  [cheshire "5.3.1"]
                  [clj-time "0.6.0"]
-                 [event-fabric/api-client "0.1.2-SNAPSHOT"]
+                 [event-fabric/api-client "0.2.0-SNAPSHOT"]
                  [com.fasterxml.jackson.core/jackson-databind "2.3.2"]
                  [org.clojure/tools.logging "0.2.6"]]
   :profiles {:dev {:dependencies []}}
