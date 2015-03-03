@@ -41,11 +41,12 @@
       [true (make-session client token)]
       [false (make-session client nil)])))
 
-(defn send-event [session value channel & [user requester]]
+(defn send-event [session value channel & [requester bucket]]
   (let [requester (or requester default-requester)
         root-url (get-in session [:client-data :root-url])
-        username (or user (get-in session [:client-data :username]))
-        stream-url (str "streams/" username "/" channel "/")
+        username (get-in session [:client-data :username])
+        final-bucket (or bucket (str "_user_" username))
+        stream-url (str "streams/" final-bucket "/" channel "/")
         service-url (make-endpoint root-url stream-url)
         token (:session-data session)
         response (requester service-url value token)

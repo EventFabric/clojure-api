@@ -1,0 +1,7 @@
+{
+    "folder":  "resources/",
+    "ef-username": "admin",
+    "ef-password": "secret",
+    "ef-channel": "my.channel",
+    "ef-url": "http://localhost:8080/"
+}
